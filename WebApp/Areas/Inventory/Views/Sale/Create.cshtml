@@ -1,0 +1,365 @@
+﻿@model Inventory.ViewModels.Sale.SaleIndexViewModel
+
+@{
+    Layout = "_Layout";
+}
+
+<div class="container mt-5">
+    <h2 class="text-left">Create Sales</h2>
+    <div class="row">
+
+        <div class="col-6">
+            <div class="form-group shadow rounded border-primary border-left  text-dark  p-4">
+                <label class="font-weight-bold" asp-for="CusId"></label>
+                <select asp-for="CusId" id="customer" asp-items="@Model.CustomerSelectList" class="form-control">
+                </select>
+                <span asp-validation-for="CusId" class="text-danger"></span>
+            </div>
+
+            <form class="shadow rounded border-primary border-left  text-dark  p-4" method="post" asp-controller="Sale" asp-action="Create">
+
+                <div class="form-group">
+                    <label asp-for="ItemId"></label>
+                    <select id="productDrop" class="form-control" asp-for="ItemId" asp-items="@Model.itemList"></select>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-form-label">Available Qty</label>
+                    <input id="available_qty" readonly class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label class="col-form-label">Price:-</label>
+                    <input id="price" readonly class="form-control" />
+                </div>
+
+                <div class="form-group">
+                    <label class="col-form-label"> Quantity</label>
+                    <input id="qty" min="1" value="1" class="form-control" placeholder="Input quantity" />
+                </div>
+
+                <button id="btn" type="submit" class="btn btn-info">Add to List</button>
+            </form>
+        </div>
+
+        <div class="col-6 ">
+            <div class="table-responsive rounded-sm " style="height: 210px; max-height: 300px; overflow-y: scroll;">
+                <table class="table">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Total</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+
+            <form method="POST" class="shadow rounded   text-dark ">
+                <ul class="list-group mt-3">
+
+
+                    <li class="list-group-item text-right ">
+                        Total&nbsp;
+                        <input id="totalAmt" readonly="readonly" />
+                    </li>
+
+                    <li class="list-group-item text-right ">
+                        Discount &nbsp;
+                        <input id="discount" min="0" value="0" type="number" />
+                    </li>
+
+                    <li class="list-group-item text-right text-danger ">
+                        Net Total &nbsp;
+                        <input id="net" readonly="readonly" />
+                    </li>
+                    <li class="list-group-item text-right ">
+                        Paid Amont &nbsp;
+                        <input id="paidAmount" value="0" />
+                    </li>
+                    <li class="list-group-item text-right">
+                        Return Amount &nbsp;
+                        <input id="returnAmount" readonly="readonly" />
+                    </li>
+                    <li class="list-group-item text-right">
+                        Due Amount &nbsp;
+                        <input id="dueAmount" readonly="readonly" />
+                    </li>
+                </ul>
+
+                <button id="btnSave" type="submit" class="btn btn-block btn-success">Save Sale</button>
+
+            </form>
+
+
+
+
+
+        </div>
+    </div>
+</div>
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            $('#qty').on('change',
+                function (e) {
+                    e.preventDefault();
+                    if ($("#qty").val() < 1) {
+                        $("#qty").val(1);
+                    }
+                });
+            $('#productDrop').on('change',
+                function (e) {
+                    e.preventDefault();
+
+                    var p_id = $('#productDrop').val();
+
+
+                    var url = `/Sale/GetPrice?id=${p_id}`;
+
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (data) {
+                            $('#price').val(data);
+                        }
+                    });
+                    var url = `/Sale/GetAvailableQty?id=${p_id}`;
+
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (data) {
+                            $('#available_qty').val(data);
+                        }
+                    });
+
+
+                });
+
+            function checkDuplicate(itemId) {
+                event.preventDefault();
+                let result = true;
+                $('table tr').each(function () {
+
+                    row = $(this).closest('tr');
+                    find_id = parseInt(row.find('td').eq(0).text());
+
+                    if (itemId == find_id) {
+                        alert("You have entered the same Item!");
+                        result = false;
+                    }
+
+                });
+                return result;
+
+            }
+
+            $('#discount').on('keyup',
+                function (e) {
+                    e.preventDefault();
+                    var total = $("#totalAmt").val();
+                    var discount = $("#discount").val();
+                    if (parseFloat(discount) < 0) {
+                        $("#discount").val(0);
+                    }
+                    if (parseFloat(discount) > parseFloat(total)) {
+                        $("#discount").val(total);
+                    }
+                    calculateTotal();
+                });
+            $('#paidAmount').on('keyup',
+                function (e) {
+                    e.preventDefault();
+                    $("#returnAmount").val(0);
+                    $("#dueAmount").val(0);
+                    var total = $("#net").val();
+                    var paid = $("#paidAmount").val();
+                    if (parseFloat(paid) < 0) {
+                        $("#paidAmount").val(0);
+                    }
+                    if (parseFloat(paid) > parseFloat(total)) {
+                        $("#returnAmount").val(paid - total);
+                    } else {
+                        $("#dueAmount").val(total - paid);
+                    }
+                });
+
+            $('#btn').click(function () {
+                event.preventDefault();
+
+                var item_name = $('#productDrop :selected ').text();
+                var item_id = $('#productDrop :selected ').val();
+                var price = $('#price').val();
+                var availableQty = $('#available_qty').val();
+                var qty = $('#qty').val();
+                if (parseInt(qty) > parseInt(availableQty)) {
+                    alert("Not enough available qty.");
+                    return;
+                }
+
+                var total = price * qty;
+                if (checkDuplicate(item_id)) {
+                    $('table tbody').append(
+                        `<tr>
+                                                                                                                                                                <td id="item-id" hidden> ${item_id} </td >
+
+                                                                                                                                                            <td id="itemName"> ${item_name} </td >
+                                                                                                                                                            <td id="qty-list">
+                                                                                                                                                                    <i id="minus" class="fa fa-minus-circle mr-2"></i> <span id="q"> ${qty} </span> <i id="plus" class="fa ml-2 fa-plus-circle"></i>
+                                                                                                                                                                </td>
+                                                                                                                                                            <td id="price" > ${price} </td >
+                                                                                                                                                            <td id="total"> ${total} </td>
+                                                                                                                                                            <td> <button id="removeButton" class="btn btn-danger"> Remove </button> </td>
+                                                                                                                                                            </tr >`
+                    );
+                }
+                calculateTotal();
+            });
+            $('body').delegate("#minus",
+                "click",
+                function (e) {
+
+                    e.preventDefault();
+
+                    row = $(this).closest("tr");
+                    rate = row.find("td").eq(3).text();
+                    qty = parseInt(row.find("td").eq(2).text());
+                    qty--;
+
+                    if (qty > 0) {
+
+                        amt = rate * qty;
+
+
+                        parseInt(row.find("td").eq(4).text(amt));
+                        calculateTotal();
+
+
+                        var counter = parseInt(row.find("#qty-list").text());
+                        counter--;
+                        row.find("#q").text(counter);
+
+                    } else {
+
+                        row.find("#minus").attr("disabled", true);
+
+                    }
+
+
+                });
+
+
+            $('body').delegate("#plus",
+                "click",
+                function (e) {
+                    e.preventDefault();
+
+                    row = $(this).closest("tr");
+
+                    rate = row.find("td").eq(3).text();
+                    qty = row.find("td").eq(2).text();
+                    qty++;
+                    amt = rate * qty;
+
+
+                    parseInt(row.find("td").eq(4).text(amt));
+                    calculateTotal();
+
+
+                    var counter = parseInt(row.find("#qty-list").text());
+                    counter++;
+                    row.find("#q").text(counter);
+
+                });
+            $("#productDrop").trigger("change");
+
+            function calculateTotal() {
+                var total = 0;
+                $('table tr').each(function () {
+                    var value = parseInt($('td', this).eq(4).text());
+                    if (!isNaN(value)) {
+                        total += value;
+                    }
+                });
+                $("#totalAmt").val(total);
+
+                var discount = $("#discount").val();
+                var paid = $("#paidAmount").val();
+                $("#returnAmount").val(0);
+                $("#dueAmount").val(0);
+                var net = (parseFloat(total) - parseFloat(discount));
+                var returnAmount = 0;
+                var dueAmount = 0;
+                if (paid > net) {
+                    returnAmount = paid - net;
+                } else {
+                    dueAmount = net - paid;
+                }
+                $("#net").val(net);
+                $("#returnAmount").val(returnAmount);
+                $("#dueAmount").val(dueAmount);
+            }
+
+            $("body").delegate('#removeButton',
+                'click',
+                function () {
+                    event.preventDefault();
+
+                    $(this).closest('tr').remove();
+                    calculateTotal();
+                });
+
+            $("#btnSave").on('click',
+                function (e) {
+                    e.preventDefault();
+
+                    var url = `/Sale/Create`;
+                    var data = {
+                        CusId: $('#customer :selected ').val(),
+                        netTotal: $("#net").val(),
+                        discount: $("#discount").val(),
+                        paidAmount: $("#paidAmount").val(),
+                        returnAmount: $("#returnAmount").val(),
+                        SalesDetails: [],
+                    }
+
+                    $("table>tbody>tr").each(function () {
+
+
+                        data.SalesDetails.push({
+                            ItemName: $(this).find("#itemName").text(),
+                            ItemId: $(this).find("#item-id").text(),
+                            Qty: $(this).find("#qty-list").text(),
+                            Price: $(this).find("#price").text(),
+                            Total: $(this).find("#total").text()
+
+                        });
+
+                    });
+
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        dataType: 'json',
+                        data: data,
+                        success: function (response) {
+                            alert("Saved Successfully!!!");
+                            window.open(`/Sale/Print?saleId=` + response, '_blank');
+                            window.location.href = `/Sale/Index`;
+                        }
+                    });
+
+                });
+
+
+        });
+
+    </script>
+}
