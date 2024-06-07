@@ -32,7 +32,7 @@ namespace InventoryLibrary.Source.Services.Implementation
                 var Unit = new Unit(dto.Name);
                 await _unitRepo.InsertAsync(Unit).ConfigureAwait(false);
 
-                tx.Commit(); _unitOfWork.Complete();
+                 _unitOfWork.Complete();tx.Commit();
             }
         }
 
@@ -54,7 +54,7 @@ namespace InventoryLibrary.Source.Services.Implementation
                 Unit.Update(dto.Name);
                 await _unitRepo.UpdateAsync(Unit);
 
-                tx.Commit(); _unitOfWork.Complete();
+                 _unitOfWork.Complete();tx.Commit();
             }
         }
 
@@ -70,7 +70,7 @@ namespace InventoryLibrary.Source.Services.Implementation
                 await _unitRepo.UpdateAsync(item).ConfigureAwait(false);
 
 
-                tx.Commit(); _unitOfWork.Complete();
+                 _unitOfWork.Complete();tx.Commit();
             }
         }
 
@@ -85,7 +85,7 @@ namespace InventoryLibrary.Source.Services.Implementation
 
                 await _unitRepo.UpdateAsync(item).ConfigureAwait(false);
 
-                tx.Commit(); _unitOfWork.Complete();
+                 _unitOfWork.Complete();tx.Commit();
             }
         }
     }

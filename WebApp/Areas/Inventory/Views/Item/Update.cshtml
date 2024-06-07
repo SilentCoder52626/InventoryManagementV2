@@ -1,7 +1,7 @@
 ﻿@model Inventory.ViewModels.Item.ItemUpdateViewModel 
 
 @{
-    Layout = "_Layout";
+    
 }
 <div class="container-fluid">
     <div class="row">
@@ -11,7 +11,7 @@
                     <b>Update Item</b>
                 </div>
                 <div class="card-body">
-                    <form method="post" asp-controller="Item" asp-action="Update">
+                    <form method="post" asp-area="Inventory" asp-controller="Item" asp-action="Update">
                         <div class="form-group">
                             <label asp-for="ItemId"></label>
                             <input class="form-control" readonly type="text" asp-for="ItemId" />

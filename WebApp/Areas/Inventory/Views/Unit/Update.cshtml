@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "Update Unit";
 
-    Layout = "_Layout";
+    
 }
 
 <div class="container">
@@ -19,7 +19,7 @@
             <b>@ViewData["Title"]</b>
         </div>
         <div class="card-body">
-            <form method="post" asp-controller="Unit" asp-action="Update">
+                    <form method="post" asp-area="Inventory" asp-controller="Unit" asp-action="Update">
                 <div class="form-group">
                     <label asp-for="UnitId"></label>
                     <input class="form-control" readonly type="text" asp-for="UnitId" />

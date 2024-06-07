@@ -50,7 +50,7 @@ namespace InventoryLibrary.Services.Implementation
 
 
                 await _saleRepo.InsertAsync(sale).ConfigureAwait(false);
-
+                _unitOfWork.Complete();
 
 
                 foreach (var SaleData in dto.SaleDetails)
@@ -69,7 +69,7 @@ namespace InventoryLibrary.Services.Implementation
                     await _saleDetailRepo.InsertAsync(SaleDetail).ConfigureAwait(false);
                 }
                 //Type Sales
-                await _transactionService.Create(new CustomerTransactionCreateDto()
+                await _transactionService.CreateWithoutTransaction(new CustomerTransactionCreateDto()
                 {
                     CustomerId = sale.CusId,
                     Amount = sale.netTotal,
@@ -79,7 +79,7 @@ namespace InventoryLibrary.Services.Implementation
                 // Type payment
                 if (sale.paidAmount - sale.returnAmount > 0)
                 {
-                    await _transactionService.Create(new CustomerTransactionCreateDto()
+                    await _transactionService.CreateWithoutTransaction(new CustomerTransactionCreateDto()
                     {
                         CustomerId = sale.CusId,
                         Amount = sale.paidAmount - sale.returnAmount,
@@ -88,7 +88,8 @@ namespace InventoryLibrary.Services.Implementation
                     }).ConfigureAwait(false);
                 }
 
-                tx.Commit(); _unitOfWork.Complete();
+                 _unitOfWork.Complete();
+                tx.Commit();
                 return sale;
 
             }

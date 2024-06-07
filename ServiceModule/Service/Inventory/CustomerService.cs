@@ -68,7 +68,7 @@ namespace InventoryLibrary.Source.Services
 
                     await _customerRepo.UpdateAsync(customer);
 
-                    tx.Commit(); _unitOfWork.Complete();
+                     _unitOfWork.Complete();tx.Commit();
                 }
 
             }

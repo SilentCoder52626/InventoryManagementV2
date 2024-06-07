@@ -1,7 +1,7 @@
 ﻿@model Inventory.ViewModels.Purchase.PurchaseIndexViewModel
 
 @{
-    Layout = "_Layout";
+    
 }
 
 <div class="container mt-5">
@@ -310,7 +310,7 @@
 
                 checkIfEmpty();
 
-                var url = `/Purchase/Create`;
+                var url = `/Inventory/Purchase/Create`;
 
                 var data = {
                     SupplierId: $('#SupplierId').val(),
@@ -341,9 +341,8 @@
                     type: 'POST',
                     dataType: 'json',
                     success: function (data, status) {
-                        console.log(data);
                         alert("Purchase Saved Successfully!");
-                        window.location.href = `/Purchase/Index`;
+                        window.location.href = `/Inventory/Purchase/Index`;
 
                     }
                 });

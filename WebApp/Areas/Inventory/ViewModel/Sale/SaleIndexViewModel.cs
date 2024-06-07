@@ -1,6 +1,7 @@
 ﻿using Inventory.ViewModels.SaleDetail;
 using InventoryLibrary.Entity;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Org.BouncyCastle.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -42,8 +43,28 @@ namespace Inventory.ViewModels.Sale
         public SelectList CustomerSelectList =>
             new SelectList(customers, nameof(Customer.CusId), nameof(Customer.FullName));
         public InventoryLibrary.Entity.Item? item { get; set; }
-        public SelectList itemList => new SelectList(items, nameof(item.Id), nameof(item.Name));
-        public IList<InventoryLibrary.Entity.Item> items { get; set; } = new List<InventoryLibrary.Entity.Item>();
+        public SelectList itemList => new SelectList(
+        ItemsWithDisplayText(),
+        nameof(ItemWithDisplayText.Id),
+        nameof(ItemWithDisplayText.DisplayText)
+    );
 
+        public IList<InventoryLibrary.Entity.Item> items { get; set; } = new List<InventoryLibrary.Entity.Item>();
+        private IEnumerable<ItemWithDisplayText> ItemsWithDisplayText()
+        {
+            foreach (var item in items)
+            {
+                yield return new ItemWithDisplayText
+                {
+                    Id = item.Id,
+                    DisplayText = $"{item.Name} per {item.Unit.Name}"
+                };
+            }
+        }
+    }
+    public class ItemWithDisplayText
+    {
+        public long Id { get; set; }
+        public string DisplayText { get; set; }
     }
 }

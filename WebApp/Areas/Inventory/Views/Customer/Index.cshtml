@@ -1,13 +1,13 @@
 ﻿@model IList<Inventory.ViewModels.CustomerIndexViewModel>
 
 @{
-    Layout = "_Layout";
+    
 }
 
 <div class=" container mt-2">
     <div class="row">
         <div class="col-md-4">
-            <a class="btn btn-primary" asp-controller="Customer" asp-action="Create">Add a Customer</a>
+            <a class="btn btn-primary" asp-area="Inventory" asp-controller="Customer" asp-action="Create">Add a Customer</a>
 
         </div>
     </div>
@@ -38,7 +38,7 @@
                             <td>@data.PhoneNumber</td>
                             <td>@data.Gender</td>
                             <td>
-                                <a class="btn btn-info" asp-controller="Customer" asp-action="Update" asp-route-id="@data.CusId">Edit</a>
+                                    <a class="btn btn-info" asp-area="Inventory" asp-controller="Customer" asp-action="Update" asp-route-id="@data.CusId">Edit</a>
                             </td>
                         </tr>
                     }

@@ -1,7 +1,7 @@
 ﻿using DomainModule.Dto.User;
 using DomainModule.Entity;
 using DomainModule.ServiceInterface.Account;
-using Hangfire;
+//using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;

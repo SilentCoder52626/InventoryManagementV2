@@ -1,7 +1,7 @@
 ﻿@model IList<Inventory.ViewModels.Sale.SaleIndexViewModel>
 
 @{
-    Layout = "_Layout";
+    
 }
 
 <div class="container-fluid mt-2">
@@ -87,7 +87,7 @@
             $('.btn-print').on('click',function(){
                 event.preventDefault();
                 var id = $(this).closest('tr').find('td').eq(0).text();
-                var url = '/Sale/Print?saleId=' + id + "";
+                var url = '/Inventory/Sale/Print?saleId=' + id + "";
                 window.open(url, '_blank');
                 
                 
@@ -97,7 +97,7 @@
                 event.preventDefault();
 
                 var id = $(this).closest('tr').find('td').eq(0).text();
-                var url = '/Sale/GetDetails?id=' + id + "";
+                var url = '/Inventory/Sale/GetDetails?id=' + id + "";
 
 
                 $.ajax({
@@ -110,11 +110,11 @@
                         $(function() {
                             $.each(data, function(i, item) {
                                 $('<tr>').append(
-                                    $('<td>').text(item.saleDetailId),
-                                    $('<td>').text(item.itemName),
-                                    $('<td>').text(item.qty),
-                                    $('<td>').text(item.price),
-                                    $('<td>').text(item.total)).appendTo('#salesDetailTable');
+                                    $('<td>').text(item.SaleDetailId),
+                                    $('<td>').text(item.ItemName),
+                                    $('<td>').text(item.Qty),
+                                    $('<td>').text(item.Price),
+                                    $('<td>').text(item.Total)).appendTo('#salesDetailTable');
                             });
                             $("#myModal").modal('show');
                         });

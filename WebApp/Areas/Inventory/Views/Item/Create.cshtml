@@ -1,6 +1,6 @@
 ﻿@model Inventory.ViewModels.Item.ItemCreateIndexView
 @{
-    Layout = "_Layout";
+    
 }
 
 <div class="container-fluid">
@@ -11,7 +11,7 @@
                     <b>Create Item</b>
                 </div>
                 <div class="card-body">
-                    <form method="post" asp-controller="Item" asp-action="Create">
+                    <form method="post" asp-area="Inventory" asp-controller="Item" asp-action="Create">
                         <div class="form-group">
                             <label asp-for="ItemName"></label>
                             <input class="form-control" type="text" asp-for="ItemName" />

@@ -1,6 +1,5 @@
 ﻿@model Inventory.ViewModels.CustomerCreateViewModel
 @{
-    Layout = "_Layout";
 }
 
 <div class="container-fluid">
@@ -11,7 +10,7 @@
                     <b>Create Customer</b>
                 </div>
                 <div class="card-body">
-                    <form method="post" asp-controller="Customer" asp-action="Create">
+                    <form method="post" asp-area="Inventory" asp-controller="Customer" asp-action="Create">
                         <div class="form-group">
                             <label asp-for="FullName"></label>
                             <input class="form-control" type="text" asp-for="FullName" />

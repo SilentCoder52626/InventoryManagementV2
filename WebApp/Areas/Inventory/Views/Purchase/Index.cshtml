@@ -1,7 +1,7 @@
 ﻿@model IList<Inventory.ViewModels.Purchase.PurchaseIndexViewModel>
 
 @{
-    Layout = "_Layout";
+    
 }
 
 <div class="container">
@@ -83,7 +83,7 @@
             $('.btn-details').on('click', function(e) {
                 e.preventDefault();
                 var id = $(this).closest('tr').find('td').eq(0).text();
-                var url = '/Purchase/GetDetails?id=' + id + "";
+                var url = '/Inventory/Purchase/GetDetails?id=' + id + "";
 
                 $.ajax({
                     url: url,
