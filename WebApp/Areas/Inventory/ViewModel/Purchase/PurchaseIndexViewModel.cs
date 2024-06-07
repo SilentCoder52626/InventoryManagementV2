@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Inventory.ViewModels.Sale;
 
 namespace Inventory.ViewModels.Purchase
 {
@@ -33,7 +34,7 @@ namespace Inventory.ViewModels.Purchase
 
         [Display(Name = "Discount ")]
         public decimal Discount { get; set; }
-        
+
         [Display(Name = "Remarks ")]
         public string? Remarks { get; set; }
         public List<PurchaseDetailCreateViewModel>? PurchaseDetails { get; set; }
@@ -46,7 +47,22 @@ namespace Inventory.ViewModels.Purchase
 
         public IList<InventoryLibrary.Entity.Item>? Items { get; set; } = new List<InventoryLibrary.Entity.Item>();
 
-        public SelectList ItemSelectList => new SelectList(Items, nameof(InventoryLibrary.Entity.Item.Id),
-            nameof(InventoryLibrary.Entity.Item.Name));
+
+        private IEnumerable<ItemWithDisplayText> ItemsWithDisplayText()
+        {
+            foreach (var item in Items)
+            {
+                yield return new ItemWithDisplayText
+                {
+                    Id = item.Id,
+                    DisplayText = $"{item.Name} per {item.Unit.Name}"
+                };
+            }
+        }
+        public SelectList ItemSelectList => new SelectList(
+ItemsWithDisplayText(),
+nameof(ItemWithDisplayText.Id),
+nameof(ItemWithDisplayText.DisplayText)
+);
     }
 }

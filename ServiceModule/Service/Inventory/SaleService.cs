@@ -55,15 +55,17 @@ namespace InventoryLibrary.Services.Implementation
 
                 foreach (var SaleData in dto.SaleDetails)
                 {
+                    var item = await _itemRepo.GetByIdAsync(SaleData.ItemId);
+
                     var SaleDetail = new SaleDetails
                     {
                         Qty = SaleData.Qty,
                         Total = SaleData.Total,
                         Price = SaleData.Price,
                         SaleId = sale.SaleId,
-                        ItemName = SaleData.ItemName
+                        ItemName = item.Name,
+                        UnitName = item.Unit.Name,
                     };
-                    var item = await _itemRepo.GetByIdAsync(SaleData.ItemId);
                     item.DecreaseQty(SaleData.Qty);
                     await _itemRepo.UpdateAsync(item);
                     await _saleDetailRepo.InsertAsync(SaleDetail).ConfigureAwait(false);

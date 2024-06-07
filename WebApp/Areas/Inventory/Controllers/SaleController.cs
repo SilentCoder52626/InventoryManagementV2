@@ -109,6 +109,7 @@ namespace Inventory.Controllers
                 {
                     a.SaleDetailId,
                     a.ItemName,
+                    a.UnitName,
                     a.Price,
                     a.Qty,
                     a.Total,
@@ -212,6 +213,7 @@ namespace Inventory.Controllers
                     {
                         ItemId = a.ItemId,
                         ItemName = a.ItemName,
+                        Unit = a.UnitName,
                         Price = a.Price,
                         Qty = a.Qty,
                         Total = a.Total

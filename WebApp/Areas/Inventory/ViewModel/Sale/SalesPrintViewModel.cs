@@ -12,10 +12,6 @@ namespace Inventory.ViewModels.Sale
 
         public string? CustomerName { get; set; }
 
-        public long ItemId { get; set; }
-
-        public string? ItemName { get; set; }
-
         public long total { get; set; }
 
         public long discount { get; set; }

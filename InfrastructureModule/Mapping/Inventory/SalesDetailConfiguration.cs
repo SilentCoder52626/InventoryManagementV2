@@ -20,6 +20,10 @@ namespace InventoryLibrary.Infrastructure.Mapping
                 .HasColumnName("ItemName");
             modelBuilder
                 .ToTable("sale_details")
+                .Property(p => p.UnitName)
+                .HasColumnName("UnitName");
+            modelBuilder
+                .ToTable("sale_details")
                 .Property(p => p.SaleId)
                 .HasColumnName("SaleId");
             modelBuilder

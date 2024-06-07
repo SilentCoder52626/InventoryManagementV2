@@ -11,6 +11,7 @@ namespace InventoryLibrary.Entity
         public long SaleId { get; set; }
 
         public string ItemName { get; set; }
+        public string UnitName { get; set; }
         public long ItemId { get; set; }
 
         public int Qty { get; set; }

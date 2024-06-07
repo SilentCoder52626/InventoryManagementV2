@@ -59,7 +59,8 @@
                         <thead class="thead-dark">
                             <tr>
                                 <th> # </th>
-                                <th> Item Name </th>
+                                <th> Item </th>
+                                <th> Unit</th>
                                 <th> Qty </th>
                                 <th> Price </th>
                                 <th> Total</th>
@@ -112,6 +113,7 @@
                                 $('<tr>').append(
                                     $('<td>').text(item.SaleDetailId),
                                     $('<td>').text(item.ItemName),
+                                    $('<td>').text(item.UnitName),
                                     $('<td>').text(item.Qty),
                                     $('<td>').text(item.Price),
                                     $('<td>').text(item.Total)).appendTo('#salesDetailTable');
