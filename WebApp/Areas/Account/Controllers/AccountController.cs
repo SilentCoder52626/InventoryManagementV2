@@ -147,15 +147,15 @@ namespace WebApp.Areas.Account.Controllers
             }
 
         }
-        public async Task<IActionResult> Register()
-        {
-            var userModel = new UserViewModel()
-            {
+        //public async Task<IActionResult> Register()
+        //{
+        //    var userModel = new UserViewModel()
+        //    {
 
-            };
+        //    };
 
-            return View(userModel);
-        }
+        //    return View(userModel);
+        //}
         [HttpPost]
 		public async Task<IActionResult> Register(UserRegisterViewModel model)
 		{

@@ -11,7 +11,8 @@
     <title>Login - CommonWorld</title>
 
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    @* <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> *@
+    <link href="~/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css" asp-append-version="true">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
     <!--Stylesheet-->
     <link href="~/css/login.css" rel="stylesheet" />
@@ -33,13 +34,13 @@
         <input type="password" asp-for="Password" placeholder="Password">
         @Html.ValidationMessageFor(a => a.Password, "", new { @class = "text-danger" })
 
-        <p style="float:right;padding:5px 0;"><a asp-action="ForgetPassword" asp-area="Account" asp-controller="Account">Forget Password?</a> </p>
+        <p style="float:right;padding:5px 0;"><a href="#">Forget Password?</a> </p>
 
         <button type="submit">Log In</button>
         <br />
-        <br />
+        @* <br />
         <p>Don't have an account? <a asp-action="Register" asp-area="Account" asp-controller="Account">Register</a></p>
-
+ *@
 
 
     </form>

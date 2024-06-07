@@ -191,7 +191,7 @@ namespace Inventory.Controllers
             };
             return View(saleView);
         }
-        public async Task<IActionResult> Print(long saleId)
+        public async Task<IActionResult> Print(int saleId)
         {
             var Sales = await _saleRepo.GetByIdAsync(saleId);
             var model = new SalesPrintViewModel()
