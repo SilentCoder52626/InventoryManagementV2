@@ -15,94 +15,100 @@ namespace WebApp.ActionFilters
     public class ActivityLogFilters : ActionFilterAttribute
     {
         private readonly IActivityLogService _activityService;
+        private readonly IConfiguration _configuration;
 
-        public ActivityLogFilters(IActivityLogService activityService)
+        public ActivityLogFilters(IActivityLogService activityService, IConfiguration configuration)
         {
             _activityService = activityService;
+            _configuration = configuration;
         }
 
 
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            var controllerName = ((ControllerBase)context.Controller)
-               .ControllerContext.ActionDescriptor.ControllerName;
-
-            var actionName = ((ControllerBase)context.Controller)
-                 .ControllerContext.ActionDescriptor.ActionName;
-
-            var actionDescriptorRouteValues = ((ControllerBase)context.Controller)
-               .ControllerContext.ActionDescriptor.RouteValues;
-            var Area = "";
-            if (actionDescriptorRouteValues.ContainsKey("area"))
+            var RecordActivityLog = _configuration["RecordActivityLog"];
+            if (RecordActivityLog == "True")
             {
-                var area = actionDescriptorRouteValues["area"];
-                if (area != null)
+                var controllerName = ((ControllerBase)context.Controller)
+                   .ControllerContext.ActionDescriptor.ControllerName;
+
+                var actionName = ((ControllerBase)context.Controller)
+                     .ControllerContext.ActionDescriptor.ActionName;
+
+                var actionDescriptorRouteValues = ((ControllerBase)context.Controller)
+                   .ControllerContext.ActionDescriptor.RouteValues;
+                var Area = "";
+                if (actionDescriptorRouteValues.ContainsKey("area"))
                 {
-                    Area = Convert.ToString(area);
+                    var area = actionDescriptorRouteValues["area"];
+                    if (area != null)
+                    {
+                        Area = Convert.ToString(area);
+                    }
                 }
-            }
 
-            var session = context.HttpContext.Session.Id;
-            var statusCode = context.HttpContext.Response.StatusCode.ToString();
-            var ipAddress = context.HttpContext.Connection.RemoteIpAddress?.ToString();
-            var queryString = context.HttpContext.Request.QueryString.Value;
-            var data = "";
-            var arguments = context.ActionArguments;
-            if (arguments.Any())
-            {
-                var argumentsData = new List<KeyValuePair<string, object>>();
-                foreach (var argument in arguments)
+                var session = context.HttpContext.Session.Id;
+                var statusCode = context.HttpContext.Response.StatusCode.ToString();
+                var ipAddress = context.HttpContext.Connection.RemoteIpAddress?.ToString();
+                var queryString = context.HttpContext.Request.QueryString.Value;
+                var data = "";
+                var arguments = context.ActionArguments;
+                if (arguments.Any())
                 {
-                    var modelName = (argument.Value).GetType().Name;
-                    if(modelName == "LoginViewModel")
+                    var argumentsData = new List<KeyValuePair<string, object>>();
+                    foreach (var argument in arguments)
                     {
-                        var modelValue = (LoginViewModel)argument.Value;
-                        argumentsData.Add(new KeyValuePair<string, object>(argument.Key, new LoginViewModel() { Email = modelValue.Email, ExternalProviders = modelValue.ExternalProviders, RememberMe = modelValue.RememberMe, ReturnUrl = modelValue.ReturnUrl, Password = PasswordHasher(modelValue.Password) }));
-                    }
-                    else
-                    {
-                        argumentsData.Add(argument);
-                    }
+                        var modelName = (argument.Value).GetType().Name;
+                        if (modelName == "LoginViewModel")
+                        {
+                            var modelValue = (LoginViewModel)argument.Value;
+                            argumentsData.Add(new KeyValuePair<string, object>(argument.Key, new LoginViewModel() { Email = modelValue.Email, ExternalProviders = modelValue.ExternalProviders, RememberMe = modelValue.RememberMe, ReturnUrl = modelValue.ReturnUrl, Password = PasswordHasher(modelValue.Password) }));
+                        }
+                        else
+                        {
+                            argumentsData.Add(argument);
+                        }
 
+                    }
+                    data = JsonConvert.SerializeObject(argumentsData);
                 }
-                data = JsonConvert.SerializeObject(argumentsData);
-            }
-            var browser = context.HttpContext.Request.Headers["user-agent"].ToString();
-            var pageAccessed = Convert.ToString(context.HttpContext.Request.Path);
-            var header = context.HttpContext.Request.GetTypedHeaders();
-            var userId = "";
-            var userName = "Anonymous";
-            var user = context.HttpContext.User;
-            if (user.Claims.Count() > 0)
-            {
-                userId = user.FindFirst(ClaimTypes.NameIdentifier).Value;
-                userName = user.FindFirst(ClaimTypes.Name).Value;
-            }
-            Uri uriReferer = header.Referer;
-            var uriRef = "";
-            if (uriReferer != null)
-            {
-                uriRef = header.Referer.AbsoluteUri;
-            }
+                var browser = context.HttpContext.Request.Headers["user-agent"].ToString();
+                var pageAccessed = Convert.ToString(context.HttpContext.Request.Path);
+                var header = context.HttpContext.Request.GetTypedHeaders();
+                var userId = "";
+                var userName = "Anonymous";
+                var user = context.HttpContext.User;
+                if (user.Claims.Count() > 0)
+                {
+                    userId = user.FindFirst(ClaimTypes.NameIdentifier).Value;
+                    userName = user.FindFirst(ClaimTypes.Name).Value;
+                }
+                Uri uriReferer = header.Referer;
+                var uriRef = "";
+                if (uriReferer != null)
+                {
+                    uriRef = header.Referer.AbsoluteUri;
+                }
 
-            var activityDto = new ActivityLogDto()
-            {
-                ActionName = actionName,
-                ActionOn = DateTime.Now,
-                Area = Area,
-                IpAddress = ipAddress,
-                PageAccessed = pageAccessed,
-                Browser = browser,
-                ControllerName = controllerName,
-                Data = data,
-                QueryString= queryString,
-                SessionId = session,
-                Status = statusCode,
-                UrlReferrer = uriRef,
-                UserId = userId,
-                UserName = userName
-            };
-            await _activityService.Create(activityDto);
+                var activityDto = new ActivityLogDto()
+                {
+                    ActionName = actionName,
+                    ActionOn = DateTime.Now,
+                    Area = Area,
+                    IpAddress = ipAddress,
+                    PageAccessed = pageAccessed,
+                    Browser = browser,
+                    ControllerName = controllerName,
+                    Data = data,
+                    QueryString = queryString,
+                    SessionId = session,
+                    Status = statusCode,
+                    UrlReferrer = uriRef,
+                    UserId = userId,
+                    UserName = userName
+                };
+                await _activityService.Create(activityDto);
+            }
             await next();
         }
 
