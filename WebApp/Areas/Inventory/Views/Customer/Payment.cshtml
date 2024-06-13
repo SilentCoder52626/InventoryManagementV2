@@ -47,10 +47,9 @@
 @section Scripts{
     <script>
         $("document").ready(function(){
-            $("#Amount").keydown(function () {
-                
-                var DueAmount = $("#DueAmount").val();
-                var PaidAmount = $(this).val();
+            $("#Amount").keyup(function () {
+                var DueAmount = parseFloat($("#DueAmount").val());
+                var PaidAmount = parseFloat($("#Amount").val());
                 var reminingDue = PaidAmount > DueAmount ? 0 : DueAmount - PaidAmount;
                 var RemainingAmount = $("#RemainingDue").val(reminingDue);
 

@@ -52,7 +52,6 @@ namespace Inventory.Controllers
 
                     vm.Transactions.Add(tt);
                 }
-                vm.Transactions = vm.Transactions.OrderByDescending(a => a.TransactionDate).ToList();
             }
             return View(vm);
         }

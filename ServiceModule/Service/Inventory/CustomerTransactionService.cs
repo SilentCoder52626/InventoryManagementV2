@@ -44,6 +44,43 @@ namespace InventoryLibrary.Source.Services.Implementation
             await _transactionRepo.InsertAsync(Transaction).ConfigureAwait(false);
         }
 
-        
+        public async Task ReCalculateCustomerBalance()
+        {
+            using (var tx = await _unitOfWork.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted))
+            {
+                {
+                    var CustomerIds = _customerRepo.GetQueryable().Select(c => c.CusId).ToList();
+                    foreach (var customerId in CustomerIds)
+                    {
+                        var Transactions = _transactionRepo.GetQueryable().Where(c => c.CustomerId == customerId).OrderBy(a=>a.TransactionDate).ToList();
+
+
+                        
+                        for (int i = 0; i < Transactions.Count; i++)
+                        {
+                            var CurrentData = Transactions[i];
+                            var CurrentIndex = i;
+                            int PreviousIndex = CurrentIndex - 1;
+                            decimal PreviousBalance = 0;
+                            
+                            if (i > 0)
+                            {
+                                PreviousBalance = Transactions[PreviousIndex].Balance;
+                            }
+
+                            var BalanceAmount = CurrentData.AmountType == CustomerTransaction.TypeDebit
+                                ? PreviousBalance + CurrentData.Amount
+                                : PreviousBalance - CurrentData.Amount;
+                            CurrentData.Balance =BalanceAmount;
+
+                            await _transactionRepo.UpdateAsync(CurrentData).ConfigureAwait(false);
+                        }
+
+                    }
+                    _unitOfWork.Complete();
+                    tx.Commit();
+                }
+            }
+        }
     }
 }

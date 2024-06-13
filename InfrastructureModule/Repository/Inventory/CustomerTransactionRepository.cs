@@ -14,7 +14,7 @@ namespace InventoryLibrary.Source.Repository
 
         public async Task<List<CustomerTransaction>> GetAllTransactionOfCustomer(long customerId)
         {
-            return await this.GetQueryable().Where(a => a.CustomerId == customerId).ToListAsync().ConfigureAwait(false);
+            return await this.GetQueryable().Where(a => a.CustomerId == customerId).OrderByDescending(a => a.TransactionDate).ToListAsync().ConfigureAwait(false);
         }
 
         public decimal GetCustomerBalanceAmount(long customerId)

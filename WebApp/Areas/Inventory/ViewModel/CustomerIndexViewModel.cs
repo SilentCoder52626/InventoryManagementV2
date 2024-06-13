@@ -31,5 +31,7 @@ namespace Inventory.ViewModels
         [Required(ErrorMessage = "Gender is required")]
         [Display(Name = "Gender")]
         public string? Gender { get; set; }
+
+        public string? Balance { get; set; }
     }
 }

@@ -28,9 +28,9 @@ namespace WebApp.Controllers
         {
             return View();
         }
-        public IActionResult ReCalculateCustomerBalance()
+        public async Task<IActionResult> ReCalculateCustomerBalance()
         {
-
+            await _customerTransactionService.ReCalculateCustomerBalance();
             return RedirectToAction(nameof(Index));
         }
 

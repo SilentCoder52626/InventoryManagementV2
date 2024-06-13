@@ -7,5 +7,6 @@ namespace InventoryLibrary.Source.Services.ServiceInterface
     {
         Task Create(CustomerTransactionCreateDto dto);
         Task CreateWithoutTransaction(CustomerTransactionCreateDto dto);
+        Task ReCalculateCustomerBalance();
     }
 }

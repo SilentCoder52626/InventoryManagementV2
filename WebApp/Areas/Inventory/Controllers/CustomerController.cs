@@ -52,7 +52,7 @@ namespace Inventory.Controllers
 
                 foreach (var data in Customer)
                 {
-
+                    var Balance = _transactionRepo.GetCustomerBalanceAmount(data.CusId);
                     var model = new CustomerIndexViewModel
                     {
                         CusId = data.CusId,
@@ -60,7 +60,9 @@ namespace Inventory.Controllers
                         FullName = data.FullName,
                         Address = data.Address,
                         Email = data.Email,
-                        Gender = data.Gender
+                        Gender = data.Gender,
+                        Balance = Balance < 0 ? $"{Math.Round(Math.Abs(Balance),2)}" : $"{Math.Round(Math.Abs(Balance),2)} (Due)"
+
                     };
 
 
@@ -179,7 +181,7 @@ namespace Inventory.Controllers
                     CusId = customer.CusId,
                     FullName = customer.FullName,
                    Amount = 0,
-                   DueAmount = CurrentBalance > 0 ? CurrentBalance : 0,
+                   DueAmount = CurrentBalance > 0 ? Math.Round(CurrentBalance,2) : 0,
                 };
 
                 return View(model);
@@ -219,7 +221,7 @@ namespace Inventory.Controllers
                         Amount = model.Amount,
                         ExtraId = customer.CusId,
                         Type = CustomerTransaction.TypePayment,
-                        Balance = CurrentBalance - model.Amount
+                        Balance = CurrentBalance > 0 ?  CurrentBalance - model.Amount : model.Amount + CurrentBalance,
                     }).ConfigureAwait(false);
                 }
                 _toastNotification.AddSuccessToastMessage("Customer Payment recorded.");
