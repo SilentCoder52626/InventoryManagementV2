@@ -12,10 +12,10 @@ namespace InventoryLibrary.Source.Services.Implementation
     public class CustomerTransactionService : CustomerTransactionServiceInterface
     {
         private readonly CustomerRepositoryInterface _customerRepo;
-        private readonly CustomerTansactionRepositoryInterface _transactionRepo;
+        private readonly CustomerTransactionRepositoryInterface _transactionRepo;
         private readonly IUnitOfWork _unitOfWork;
 
-        public CustomerTransactionService(CustomerRepositoryInterface customerRepo, CustomerTansactionRepositoryInterface transactionRepo, IUnitOfWork unitOfWork)
+        public CustomerTransactionService(CustomerRepositoryInterface customerRepo, CustomerTransactionRepositoryInterface transactionRepo, IUnitOfWork unitOfWork)
         {
             _customerRepo = customerRepo;
             _transactionRepo = transactionRepo;
@@ -37,8 +37,13 @@ namespace InventoryLibrary.Source.Services.Implementation
         public async Task CreateWithoutTransaction(CustomerTransactionCreateDto dto)
         {
             var customer = await _customerRepo.GetByIdAsync(dto.CustomerId).ConfigureAwait(false) ?? throw new CustomerNotFoundException();
-            CustomerTransaction Transaction = new CustomerTransaction(customer, dto.Amount, dto.Type, dto.ExtraId);
+            CustomerTransaction Transaction = new CustomerTransaction(customer, dto.Amount, dto.Type, dto.ExtraId)
+            {
+                Balance = dto.Balance
+            };
             await _transactionRepo.InsertAsync(Transaction).ConfigureAwait(false);
         }
+
+        
     }
 }

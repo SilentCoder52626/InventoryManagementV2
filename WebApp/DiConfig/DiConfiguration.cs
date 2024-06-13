@@ -57,7 +57,7 @@ namespace WebApp.DiConfig
             services.AddScoped<PurchaseRepositoryInterface, PurchaseRepository>();
 
             services.AddScoped<PurchaseDetailRepositoryInterface, PurchaseDetailRepository>();
-            services.AddScoped<CustomerTansactionRepositoryInterface, CustomerTransactionRepository>();
+            services.AddScoped<CustomerTransactionRepositoryInterface, CustomerTransactionRepository>();
 
         }
         private static void UseService(IServiceCollection services)

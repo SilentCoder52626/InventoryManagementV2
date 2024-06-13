@@ -5,6 +5,7 @@
         public long CustomerId { get; set; }
 
         public decimal Amount { get; set; }
+        public decimal Balance { get; set; }
         public string Type { get; set; }
         public long ExtraId { get; set; }
     }

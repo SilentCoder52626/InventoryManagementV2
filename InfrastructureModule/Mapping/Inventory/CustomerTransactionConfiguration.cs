@@ -23,6 +23,10 @@ namespace InventoryLibrary.Infrastructure.Mapping
                 .ToTable("customer_transaction")
                 .Property(c => c.Amount)
                 .HasColumnName("amount");
+            modelBuilder
+                .ToTable("customer_transaction")
+                .Property(c => c.Balance)
+                .HasColumnName("balance");
 
             modelBuilder
                 .ToTable("customer_transaction")

@@ -14,10 +14,10 @@ namespace Inventory.Controllers
     [Authorize]
     public class CustomerStatementController : Controller
     {
-        CustomerTansactionRepositoryInterface _transactionRepo;
+        CustomerTransactionRepositoryInterface _transactionRepo;
         CustomerRepositoryInterface _customerRepo;
 
-        public CustomerStatementController(CustomerTansactionRepositoryInterface transactionRepo, CustomerRepositoryInterface customerRepo)
+        public CustomerStatementController(CustomerTransactionRepositoryInterface transactionRepo, CustomerRepositoryInterface customerRepo)
         {
             _transactionRepo = transactionRepo;
             _customerRepo = customerRepo;
@@ -46,44 +46,13 @@ namespace Inventory.Controllers
                         AmountType = t.AmountType,
                         TransactionId = t.Id,
                         Type = t.Type,
-                        BalanceAmount = 0,
-                        BalanceType = ""
+                        BalanceAmount = Math.Abs(t.Balance),
+                        BalanceType = t.Balance < 0 ? "" : "(Due)"
                     };
 
                     vm.Transactions.Add(tt);
                 }
-                var CustomerStatementModelsWithBalance = new List<CustomerTransactionModel>();
-                for (int i = 0; i < vm.Transactions.Count; i++)
-                {
-                    var CurrentData = vm.Transactions[i];
-                    var CurrentIndex = i;
-                    int PreviousIndex = CurrentIndex - 1;
-                    decimal PreviousBalance = 0;
-
-                    var StatementModel = new CustomerTransactionModel()
-                    {
-                        TransactionId = CurrentData.TransactionId,
-                        Amount = CurrentData.Amount,
-                        TransactionDate = CurrentData.TransactionDate,
-                        Type = CurrentData.Type,
-                        AmountType = CurrentData.AmountType
-                    };
-                    if (i > 0)
-                    {
-                        PreviousBalance = CustomerStatementModelsWithBalance[PreviousIndex].BalanceAmount;
-                    }
-
-                    var BalanceAmount = StatementModel.AmountType == CustomerTransaction.TypeDebit
-                        ? PreviousBalance + StatementModel.Amount
-                        : PreviousBalance - StatementModel.Amount;
-                    StatementModel.BalanceType = BalanceAmount < 0 ? "" : "(Due)";
-                    StatementModel.BalanceAmount = Math.Abs(BalanceAmount);
-
-                    CustomerStatementModelsWithBalance.Add(StatementModel);
-
-                }
-                vm.Transactions = CustomerStatementModelsWithBalance;
-
+                vm.Transactions = vm.Transactions.OrderByDescending(a => a.TransactionDate).ToList();
             }
             return View(vm);
         }

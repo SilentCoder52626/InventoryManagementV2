@@ -43,7 +43,9 @@ namespace InventoryLibrary.Entity
         public virtual string AmountType { get; set; }
         // Sales => Sales Id 
         // If Seperate Payment => Payment Id :TODO:
+        // Customer Payment => CustomerId
         public virtual long ExtraId { get; set; }
+        public virtual decimal Balance { get; set; }
 
     }
 }

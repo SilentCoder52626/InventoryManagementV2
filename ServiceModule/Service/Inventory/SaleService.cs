@@ -21,7 +21,8 @@ namespace InventoryLibrary.Services.Implementation
         private readonly CustomerTransactionServiceInterface _transactionService;
         private readonly CustomerRepositoryInterface _customerRepo;
         private readonly IUnitOfWork _unitOfWork;
-        public SaleService(SaleRepositoryInterface _saleRepo, SaleDetailRepositoryInterface _saleDetailRepo, ItemRepositoryInterface itemRepo, CustomerTransactionServiceInterface transactionService, CustomerRepositoryInterface customerRepo, IUnitOfWork unitOfWork)
+        private readonly CustomerTransactionRepositoryInterface _transactionRepo;
+        public SaleService(SaleRepositoryInterface _saleRepo, SaleDetailRepositoryInterface _saleDetailRepo, ItemRepositoryInterface itemRepo, CustomerTransactionServiceInterface transactionService, CustomerRepositoryInterface customerRepo, IUnitOfWork unitOfWork, CustomerTransactionRepositoryInterface transactionRepo)
         {
             this._saleRepo = _saleRepo;
             this._saleDetailRepo = _saleDetailRepo;
@@ -29,6 +30,7 @@ namespace InventoryLibrary.Services.Implementation
             _transactionService = transactionService;
             _customerRepo = customerRepo;
             _unitOfWork = unitOfWork;
+            _transactionRepo = transactionRepo;
         }
         public async Task<Sale> Create(SaleCreateDTO dto)
         {
@@ -70,13 +72,15 @@ namespace InventoryLibrary.Services.Implementation
                     await _itemRepo.UpdateAsync(item);
                     await _saleDetailRepo.InsertAsync(SaleDetail).ConfigureAwait(false);
                 }
+                var CurrentBalance = _transactionRepo.GetCustomerBalanceAmount(sale.CusId);
                 //Type Sales
                 await _transactionService.CreateWithoutTransaction(new CustomerTransactionCreateDto()
                 {
                     CustomerId = sale.CusId,
                     Amount = sale.netTotal,
                     ExtraId = sale.SaleId,
-                    Type = CustomerTransaction.TypeSales
+                    Type = CustomerTransaction.TypeSales,
+                    Balance = CurrentBalance-sale.netTotal
                 }).ConfigureAwait(false);
                 // Type payment
                 if (sale.paidAmount - sale.returnAmount > 0)
@@ -86,7 +90,8 @@ namespace InventoryLibrary.Services.Implementation
                         CustomerId = sale.CusId,
                         Amount = sale.paidAmount - sale.returnAmount,
                         ExtraId = sale.SaleId,
-                        Type = CustomerTransaction.TypePayment
+                        Type = CustomerTransaction.TypePayment,
+                        Balance = CurrentBalance - (sale.paidAmount - sale.returnAmount)
                     }).ConfigureAwait(false);
                 }
 
