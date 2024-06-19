@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApp.Helper;
 
 namespace Inventory.Controllers
 {
@@ -182,6 +183,8 @@ namespace Inventory.Controllers
             {
 
                 _toastNotification.AddErrorToastMessage(ex.Message);
+                CommonLogger.LogError(ex.Message, ex);
+                
             }
 
             var saleView = new SaleIndexViewModel
