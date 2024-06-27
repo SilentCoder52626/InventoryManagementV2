@@ -1,7 +1,7 @@
 ﻿@model IList<Inventory.ViewModels.Purchase.PurchaseIndexViewModel>
 
 @{
-    
+
 }
 
 <div class="container">
@@ -25,17 +25,17 @@
                 @{
                     foreach (var data in Model)
                     {
-                                <tr>
-                                    <td>@data.Id</td>
-                                    <td>@data.Date</td>
-                                    <td>@data.SupplierName</td>
-                                    <td>@Math.Round(data.Total,2)</td>
-                                    <td>@Math.Round(data.Discount,2)</td>
-                                    <td>@Math.Round(data.GrandTotal,2)</td>
-                                    <td>
-                                        <button type="button" class="btn btn-primary btn-details" data-toggle="modal" data-target="#myModal">Details</button>
-                                    </td>
-                                </tr>
+                        <tr>
+                            <td>@data.Id</td>
+                            <td>@data.NepaliDate @data.Date.ToString("hh:mm tt")</td>
+                            <td>@data.SupplierName</td>
+                            <td>@Math.Round(data.Total, 2)</td>
+                            <td>@Math.Round(data.Discount, 2)</td>
+                            <td>@Math.Round(data.GrandTotal, 2)</td>
+                            <td>
+                                <button type="button" class="btn btn-primary btn-details" data-toggle="modal" data-target="#myModal">Details</button>
+                            </td>
+                        </tr>
                     }
                 }
 
@@ -74,13 +74,13 @@
 </div>
 
 
-@section scripts{
+@section scripts {
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
 
             $('#mainTable').DataTable();
 
-            $('.btn-details').on('click', function(e) {
+            $('.btn-details').on('click', function (e) {
                 e.preventDefault();
                 var id = $(this).closest('tr').find('td').eq(0).text();
                 var url = '/Inventory/Purchase/GetDetails?id=' + id + "";
@@ -89,11 +89,11 @@
                     url: url,
                     dataType: 'json',
                     type: 'GET',
-                    success: function(data) {
+                    success: function (data) {
                         $('display').css({ 'display': 'block' });
                         $('#purchase_detail_table tbody tr').remove();
-                        $(function() {
-                            $.each(data, function(i, item) {
+                        $(function () {
+                            $.each(data, function (i, item) {
                                 $('<tr>').append(
                                     $('<td>').text(item.id),
                                     $('<td>').text(item.name),
@@ -103,7 +103,7 @@
                             });
                             $("#myModal").modal('show');
                         });
-                       
+
                     }
                 });
             })

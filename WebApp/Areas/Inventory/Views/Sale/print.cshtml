@@ -26,10 +26,10 @@
 <body>
     <div class="row">
         <div class="col-md-3">
-            <strong style="font-size: 20px;">Sales Invoice</strong><br/>
+            <strong style="font-size: 20px;" class="text-center">Sales Invoice</strong><br/><br/>
             Bill No : @Model.SaleId<br />
-            Transaction Date : @Model.date.ToString("yyyy-MM-dd")<br />
-            Customer Name : <strong>@Model.CustomerName</strong><br/>
+            Date : @Model.nepaliDate @Model.date.ToString("hh:mm tt")<br />
+            Customer : <strong>@Model.CustomerName</strong><br/>
             <div class="invoice-container">
 
             <table class="table invoice-table">

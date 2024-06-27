@@ -24,6 +24,7 @@ namespace Inventory.ViewModels.Sale
 
 
         public DateTime date { get; set; }
+        public string nepaliDate { get; set; }
 
         public List<SaleDetailIndexViewModel> SalesDetails { get; set; } = new List<SaleDetailIndexViewModel>();
     }

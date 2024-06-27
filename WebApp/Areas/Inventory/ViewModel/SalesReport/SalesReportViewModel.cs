@@ -6,6 +6,7 @@ namespace Inventory.ViewModels.SalesReport
     {
         public long SalesId { get; set; }
         public DateTime TransactionDate { get; set; }
+        public string TransactionDateNepali { get; set; }
         public string CustomerName { get; set; }
         public decimal Amount { get; set; }
         public decimal Discount { get; set; }

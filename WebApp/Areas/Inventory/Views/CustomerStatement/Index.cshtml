@@ -43,7 +43,7 @@
                         {
                             <tr>
                                 <th>@data.TransactionId</th>
-                                <td>@data.TransactionDate.ToString("yyyy-MM-dd")</td>
+                                <td>@data.TransactionDateNepali @data.TransactionDate.ToString("hh:mm tt")</td>
                                 <td>@data.Type</td>
                                 @if (data.AmountType == InventoryLibrary.Entity.CustomerTransaction.TypeDebit)
                                 {

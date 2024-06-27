@@ -7,6 +7,7 @@ using InventoryLibrary.Source.Repository.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NepaliDateConverter;
 using NToastNotify;
 using System;
 using System.Collections.Generic;
@@ -25,12 +26,14 @@ namespace Inventory.Controllers
         private readonly PurchaseServiceInterface _purchaseService;
         private readonly PurchaseRepositoryInterface _purchaseRepo;
         private readonly PurchaseDetailRepositoryInterface _purchaseDetailRepo;
+        private readonly IDateConverterService _dateConverter;
         public PurchaseController(SupplierRepositoryInterface _supplierInterface,
                                   ItemRepositoryInterface _itemRepo,
                                   IToastNotification _toastNotification,
                                   PurchaseServiceInterface _purchaseService,
                                   PurchaseRepositoryInterface _purchaseRepo,
-                                  PurchaseDetailRepositoryInterface _purchaseDetailRepo)
+                                  PurchaseDetailRepositoryInterface _purchaseDetailRepo,
+                                  IDateConverterService dateConverter)
         {
             this._supplierInterface = _supplierInterface;
             this._itemRepo = _itemRepo;
@@ -38,6 +41,7 @@ namespace Inventory.Controllers
             this._purchaseService = _purchaseService;
             this._purchaseRepo = _purchaseRepo;
             this._purchaseDetailRepo = _purchaseDetailRepo;
+            _dateConverter = dateConverter;
         }
         public async Task<IActionResult> Index()
         {
@@ -56,7 +60,8 @@ namespace Inventory.Controllers
                     GrandTotal = data.GrandTotal,
                     SupplierName = data.Suppliers.Name,
                     SupplierId = data.SupplierId,
-                    Date = data.PurchaseDateTime
+                    Date = data.PurchaseDateTime,
+                    NepaliDate = _dateConverter.ToBS(data.PurchaseDateTime).ToString(),
                 };
 
                 indexViewModel.Add(purchase);

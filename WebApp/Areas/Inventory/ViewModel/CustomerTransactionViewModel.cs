@@ -18,6 +18,7 @@ namespace Inventory.ViewModels
     public class CustomerTransactionModel
     {
         public DateTime TransactionDate { get; set; }
+        public string TransactionDateNepali{ get; set; }
         public long TransactionId { get; set; }
         public string AmountType { get; set; }
         public string Type { get; set; }

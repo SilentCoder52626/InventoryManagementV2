@@ -19,6 +19,7 @@ namespace Inventory.ViewModels.Purchase
         public string? SupplierName { get; set; }
         [Display(Name = "Purchase Date")]
         public DateTime Date { get; set; }
+        public string? NepaliDate { get; set; }
 
         [Display(Name = "Item")]
         public long ItemId { get; set; }

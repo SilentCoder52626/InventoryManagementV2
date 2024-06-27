@@ -8,6 +8,7 @@ using InventoryLibrary.Source.Repository.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NepaliDateConverter;
 using NToastNotify;
 using System;
 using System.Collections.Generic;
@@ -27,13 +28,15 @@ namespace Inventory.Controllers
         private readonly ItemRepositoryInterface _itemRepo;
         private readonly SaleServiceInterface _saleService;
         private readonly SaleDetailRepositoryInterface _saleDetailRepo;
+        private readonly IDateConverterService _dateConverter;
 
         public SaleController(SaleRepositoryInterface _saleRepo,
                               IToastNotification _toastNotification,
                               CustomerRepositoryInterface customerRepo,
                               ItemRepositoryInterface _itemRepo,
                               SaleServiceInterface _saleService,
-                              SaleDetailRepositoryInterface _saleDetailRepo)
+                              SaleDetailRepositoryInterface _saleDetailRepo,
+                              IDateConverterService dateConverter)
         {
             this._saleRepo = _saleRepo;
             _customerRepo = customerRepo;
@@ -41,6 +44,7 @@ namespace Inventory.Controllers
             this._toastNotification = _toastNotification;
             this._saleService = _saleService;
             this._saleDetailRepo = _saleDetailRepo;
+            _dateConverter = dateConverter;
         }
         public async Task<IActionResult> Index()
         {
@@ -59,10 +63,9 @@ namespace Inventory.Controllers
                         CustomerName = Customer?.FullName,
                         netTotal = data.netTotal,
                         discount = data.discount,
-                        date = data.SalesDate
+                        date = data.SalesDate,
+                        NepaliDate = _dateConverter.ToBS(data.SalesDate).ToString(),
                     };
-
-
 
                     indexViewModel.Add(model);
                 }
@@ -209,6 +212,7 @@ namespace Inventory.Controllers
                 dueAmount = Sales.dueAmount,
                 returnAmount = Sales.returnAmount,
                 date = Sales.SalesDate,
+                nepaliDate = _dateConverter.ToBS(Sales.SalesDate).ToString(),
                 total = Sales.total,
                 SalesDetails = Sales.SalesDetails.Select(a =>
 

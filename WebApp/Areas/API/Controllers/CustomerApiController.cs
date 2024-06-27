@@ -54,6 +54,20 @@ namespace Inventory.Controllers
             }
 
         }
+        [HttpGet("number/{number}")]
+        public async Task<ActionResult> GetById(string number)
+        {
+            try
+            {
+                var Customer = await _customerRepo.GetByNumber(number) ?? throw new CustomerNotFoundException();
+                return Ok(CreateReponseDto(Customer));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
 
         private object CreateReponseDto(Customer a)
         {

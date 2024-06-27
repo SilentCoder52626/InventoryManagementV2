@@ -3,6 +3,7 @@ using InventoryLibrary.Repository.Interface;
 using InventoryLibrary.Source.Repository.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NepaliDateConverter;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -14,10 +15,12 @@ namespace Inventory.Controllers
     {
         SaleRepositoryInterface _salesRepo;
         CustomerRepositoryInterface _customerRepo;
-        public SalesReportController(SaleRepositoryInterface salesRepo, CustomerRepositoryInterface customerRepo)
+        IDateConverterService _dateConverter;
+        public SalesReportController(SaleRepositoryInterface salesRepo, CustomerRepositoryInterface customerRepo, IDateConverterService dateConverter)
         {
             _salesRepo = salesRepo;
             _customerRepo = customerRepo;
+            _dateConverter = dateConverter;
         }
 
         public async Task<IActionResult> Index()
@@ -36,7 +39,8 @@ namespace Inventory.Controllers
                     CustomerName = sale.customer.FullName,
                     PaidAmount = sale.paidAmount,
                     ReturnAmount = sale.returnAmount,
-                    TransactionDate = sale.SalesDate
+                    TransactionDate = sale.SalesDate,
+                    TransactionDateNepali = _dateConverter.ToBS(sale.SalesDate).ToString(),
                 });
             }
             return View(vm);

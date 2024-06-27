@@ -36,6 +36,7 @@ namespace Inventory.ViewModels.Sale
 
 
         public DateTime date { get; set; }
+        public string NepaliDate { get; set; }
 
         public List<SaleDetailIndexViewModel> SalesDetails { get; set; }
         public IList<Customer> customers { get; set; } = new List<Customer>();

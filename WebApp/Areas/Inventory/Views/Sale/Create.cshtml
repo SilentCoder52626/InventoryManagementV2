@@ -1,7 +1,7 @@
 ﻿@model Inventory.ViewModels.Sale.SaleIndexViewModel
 
 @{
-    
+
 }
 
 <div class="container mt-5">
@@ -10,26 +10,28 @@
 
         <div class="col-5">
             <div class="form-group shadow rounded border-primary border-left  text-dark  p-4">
-                <label class="font-weight-bold" asp-for="CusId"></label>
-                <select asp-for="CusId" id="customer" asp-items="@Model.CustomerSelectList" class="form-control">
-                </select>
-                <span asp-validation-for="CusId" class="text-danger"></span>
+                <label class="font-weight-bold">Customer Mobile</label>
+                <input type="number" class="form-control" id="number" placeholder="Enter phone number." />
+                <label class="font-weight-bold mt-2">Name</label>
+                <input type="hidden" value="0" id="CusId" name="CusId" />
+                <input type="text" class="form-control" id="name" readonly="readonly" />
             </div>
 
             <form class="shadow rounded border-primary border-left  text-dark  p-4" method="post" asp-controller="Sale" asp-action="Create">
 
                 <div class="form-group">
                     <label asp-for="ItemId"></label>
-                    <select id="productDrop" class="form-control" asp-for="ItemId" asp-items="@Model.itemList"></select>
+                    <select id="productDrop" class="form-control drop-down" asp-for="ItemId" asp-items="@Model.itemList"></select>
                 </div>
-
-                <div class="form-group">
-                    <label class="col-form-label">Available Qty</label>
-                    <input id="available_qty" readonly class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label class="col-form-label">Price:-</label>
-                    <input id="price" readonly class="form-control" />
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label class="col-form-label">Available Qty</label>
+                        <input id="available_qty" readonly class="form-control" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label class="col-form-label">Price</label>
+                        <input id="price" readonly class="form-control" />
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -114,6 +116,29 @@
                         $("#qty").val(1);
                     }
                 });
+
+            $("#number").change(function (e) {
+                var number = $(this).val();
+                $.ajax({
+                    url: `/api/customers/number/${number}`,
+                    type: 'GET',
+                    success: function (data, textStatus) {
+
+                        if (textStatus == "success") {
+                            $("#name").val(data.Name)
+                            $("#CusId").val(data.Id)
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        if (xhr.status === 400) {
+                            alert(xhr.responseText);
+                        } else {
+                            console.error('Error:', status, error);
+                        }
+                    }
+                });
+            })
+
             $('#productDrop').on('change',
                 function (e) {
                     e.preventDefault();
@@ -210,16 +235,16 @@
                 if (checkDuplicate(item_id)) {
                     $('table tbody').append(
                         `<tr>
-                                                                                                                                                                <td id="item-id" hidden> ${item_id} </td >
+                                                                                                                                                                                <td id="item-id" hidden> ${item_id} </td >
 
-                                                                                                                                                            <td id="itemName"> ${item_name} </td >
-                                                                                                                                                            <td id="qty-list">
-                                                                                                                                                                    <i id="minus" class="fa fa-minus-circle mr-2"></i> <span id="q"> ${qty} </span> <i id="plus" class="fa ml-2 fa-plus-circle"></i>
-                                                                                                                                                                </td>
-                                                                                                                                                            <td id="price" > ${price} </td >
-                                                                                                                                                            <td id="total"> ${total} </td>
-                                                                                                                                                            <td> <button id="removeButton" class="btn btn-danger"> Remove </button> </td>
-                                                                                                                                                            </tr >`
+                                                                                                                                                                            <td id="itemName"> ${item_name} </td >
+                                                                                                                                                                            <td id="qty-list">
+                                                                                                                                                                                    <i id="minus" class="fa fa-minus-circle mr-2"></i> <span id="q"> ${qty} </span> <i id="plus" class="fa ml-2 fa-plus-circle"></i>
+                                                                                                                                                                                </td>
+                                                                                                                                                                            <td id="price" > ${price} </td >
+                                                                                                                                                                            <td id="total"> ${total} </td>
+                                                                                                                                                                            <td> <button id="removeButton" class="btn btn-danger"> <i class="fa fa-times"></i>  </button> </td>
+                                                                                                                                                                            </tr >`
                     );
                 }
                 calculateTotal();
@@ -321,10 +346,20 @@
             $("#btnSave").on('click',
                 function (e) {
                     e.preventDefault();
+                    var cusId = $("#CusId").val();
+                    if (cusId == 0) {
+                        alert("Please add customer.");
+                        return false;
+                    }
+                    var netAmt = $("#net").val();
 
+                    if (netAmt == 0) {
+                        alert("Please add at least one item.");
+                        return false;
+                    }
                     var url = `/Inventory/Sale/Create`;
                     var data = {
-                        CusId: $('#customer :selected ').val(),
+                        CusId: $('#CusId').val(),
                         netTotal: $("#net").val(),
                         discount: $("#discount").val(),
                         paidAmount: $("#paidAmount").val(),
@@ -353,8 +388,13 @@
                         data: data,
                         success: function (response) {
                             alert("Saved Successfully!!!");
-                            //window.open(`/Inventory/Sale/Print?saleId=` + response, '_blank');
-                            window.location.href = `/Inventory/Sale/Index`;
+                            const printUrl = `/Inventory/Sale/Print?saleId=` + response;
+
+                            window.open(printUrl, '_blank');
+
+                            setTimeout(function () {
+                                window.location.href = `/Inventory/Sale/Index`;
+                            }, 200);
                         }
                     });
 
