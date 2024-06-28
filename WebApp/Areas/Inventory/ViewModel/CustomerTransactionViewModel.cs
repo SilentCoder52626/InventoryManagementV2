@@ -5,19 +5,25 @@ using System.Collections.Generic;
 
 namespace Inventory.ViewModels
 {
+    public class CustomerTransactionFilterModel
+    {
+        public int draw { get; set; }
+        public int start { get; set; }
+        public int length { get; set; }
+        public int CustomerId { get; set; }
+    }
     public class CustomerTransactionViewModel
     {
         public long CustomerId { get; set; }
-        public string CustomerName { get; set; }
         public IList<Customer> customers { get; set; } = new List<Customer>();
 
         public SelectList CustomerSelectList =>
             new SelectList(customers, nameof(Customer.CusId), nameof(Customer.FullName));
-        public IList<CustomerTransactionModel> Transactions { get; set; } = new List<CustomerTransactionModel>();
     }
     public class CustomerTransactionModel
     {
         public DateTime TransactionDate { get; set; }
+        public string TransactionTime => TransactionDate.ToString("hh:mm tt");
         public string TransactionDateNepali{ get; set; }
         public long TransactionId { get; set; }
         public string AmountType { get; set; }

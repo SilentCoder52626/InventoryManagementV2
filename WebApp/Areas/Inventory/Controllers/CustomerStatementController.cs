@@ -1,4 +1,5 @@
-﻿using Inventory.ViewModels;
+﻿using Castle.Core.Resource;
+using Inventory.ViewModels;
 using InventoryLibrary.Entity;
 using InventoryLibrary.Repository.Interface;
 using InventoryLibrary.Source.Repository.Interface;
@@ -34,30 +35,32 @@ namespace Inventory.Controllers
                 CustomerId = customerId,
                 customers = await _customerRepo.GetAllAsync()
             };
-            if (customerId > 0)
-            {
-                var Customer = await _customerRepo.GetByIdAsync(customerId).ConfigureAwait(false);
-                vm.CustomerName = Customer.FullName;
-
-                var Transactions = await _transactionRepo.GetAllTransactionOfCustomer(customerId).ConfigureAwait(false);
-                foreach (var t in Transactions)
-                {
-                    var tt = new CustomerTransactionModel()
-                    {
-                        TransactionDate = t.TransactionDate,
-                        TransactionDateNepali = _dateConverter.ToBS(t.TransactionDate).ToString(),
-                        Amount = t.Amount,
-                        AmountType = t.AmountType,
-                        TransactionId = t.Id,
-                        Type = t.Type,
-                        BalanceAmount = Math.Abs(t.Balance),
-                        BalanceType = t.Balance < 0 ? "" : "(Due)"
-                    };
-
-                    vm.Transactions.Add(tt);
-                }
-            }
             return View(vm);
+        }
+        public async Task<IActionResult> LoadStatement(CustomerTransactionFilterModel model)
+        {
+            var TransactionQuery = _transactionRepo.GetQueryable().Where(a => a.CustomerId == model.CustomerId);
+
+            var TotalCount = TransactionQuery.Count();
+
+            var Transactions = TransactionQuery.OrderByDescending(a => a.TransactionDate).Skip(model.start).Take(model.length).ToList();
+            var response = new List<CustomerTransactionModel>();
+            foreach (var t in Transactions)
+            {
+                response.Add(new CustomerTransactionModel()
+                {
+                    TransactionDate = t.TransactionDate,
+                    TransactionDateNepali = _dateConverter.ToBS(t.TransactionDate).ToString(),
+                    Amount = t.Amount,
+                    AmountType = t.AmountType,
+                    TransactionId = t.Id,
+                    Type = t.Type,
+                    BalanceAmount = Math.Abs(t.Balance),
+                    BalanceType = t.Balance < 0 ? "" : "(Due)"
+                });                
+            }
+            var jsonData = new { draw = model.draw, recordsFiltered = TotalCount , recordsTotal = TotalCount, data = response };
+            return Ok(jsonData);
         }
     }
 }

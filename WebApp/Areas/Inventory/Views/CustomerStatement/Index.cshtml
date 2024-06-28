@@ -9,21 +9,20 @@
     <div class="row">
         <div class="col-md-12">
 
-            <form method="get" asp-action="Index">
-                <div class="form-row">
-                    <div class="form-group col-md-4">
-                        <label class="font-weight-bold"> Select Customer</label>
-                        <select asp-for="CustomerId" name="customerId" asp-items="@Model.CustomerSelectList" class="form-control drop-down">
-                            <option value="0">--Select--</option>
-                        </select>
-                        <span asp-validation-for="CustomerId" class="text-danger"></span>
-                    </div>
-                    <div class="form-group col-md-4 ">
-                        <button class="btn btn-success mt-4" type="submit">Filter</button>
-                    </div>
+
+            <div class="row">
+                <div class="form-group col-md-4">
+                    <label class="font-weight-bold"> Select Customer</label>
+                    <select asp-for="CustomerId" name="customerId" asp-items="@Model.CustomerSelectList" class="form-control drop-down">
+                        <option value="0">--Select--</option>
+                    </select>
+                    <span asp-validation-for="CustomerId" class="text-danger"></span>
                 </div>
-               
-            </form>
+                <div class="form-group col-md-4 ">
+                    <button class="btn btn-success mt-4" id="filter" type="button">Filter</button>
+                </div>
+            </div>
+
         </div>
     </div>
     <br />
@@ -33,7 +32,6 @@
             <table class="table mt-3" id="datatable">
                 <thead class="thead-dark">
                     <tr>
-                        <th scope="col">#</th>
                         <th scope="col">Transaction Date</th>
                         <th scope="col">Type</th>
                         <th scope="col">Debit Amount</th>
@@ -42,45 +40,70 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @{
-                        foreach (var data in Model.Transactions)
-                        {
-                            <tr>
-                                <th>@data.TransactionId</th>
-                                <td>@data.TransactionDateNepali @data.TransactionDate.ToString("hh:mm tt")</td>
-                                <td>@data.Type</td>
-                                @if (data.AmountType == InventoryLibrary.Entity.CustomerTransaction.TypeDebit)
-                                {
-                                    <td>@Math.Round(data.Amount,2)</td>
-
-
-                                    <td></td>
-                                }
-                                else
-                                {
-                                    <td></td>
-                                    <td>@Math.Round(data.Amount)</td>
-                                }
-
-                                <td>
-                                    @Math.Round(data.BalanceAmount,2) @data.BalanceType
-                                </td>
-
-
-
-                            </tr>
-                        }
-                    }
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-@section Scripts
-{
+
+@section Scripts {
     <script>
-        $('#datatable').DataTable({
-            order: [[0, 'desc']]
+        $("#filter").on("click", function (e) {
+            e.preventDefault();
+            table.draw();
+        })
+        var table = $("#datatable").DataTable({
+            "processing": true,
+            "serverSide": true,
+            "filter": false,
+            "ordering": false,
+            lengthMenu: [10, 25, 50, 75, 100],
+
+            "ajax": {
+                "url": "/inventory/customerStatement/LoadStatement",
+                "type": "POST",
+                "datatype": "json",
+                "data": function (d) {
+                    d.CustomerId = $('#CustomerId').val();
+                }
+            },
+            "columns": [
+                {
+                    "render": function (data, type, row, meta) {
+                        return `${row.TransactionDateNepali} ${row.TransactionTime}`
+                    }
+
+                },
+                { "data": "Type", "autoWidth": true },
+                {
+                    "render": function (data, type, row, meta) {
+
+                        if (row.AmountType == "DEBIT") {
+                            return `${row.Amount.toFixed(2)}`;
+                        }
+                            return ``;
+                    }
+                },
+                {
+                    "render": function (data, type, row, meta) {
+
+                        if (row.AmountType == "CREDIT") {
+                            return `${row.Amount.toFixed(2)}`;
+                        }
+                        return ``;
+                    }
+
+                },
+                {
+                    "render": function (data, type, row, meta) {
+                        return `${row.BalanceAmount.toFixed(2)} ${row.BalanceType}`
+                    }
+
+                },
+            ]
         });
+
+
+
     </script>
 }
