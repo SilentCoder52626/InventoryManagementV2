@@ -78,8 +78,6 @@ namespace WebApp.DiConfig
             services.AddScoped<SupplierServiceInterface, SupplierService>();
             services.AddScoped<ItemServiceInterface, ItemService>();
             services.AddScoped<CustomerServiceInterface, CustomerService>();
-            services.AddScoped<IDateConverterService, DateConverterService>();
-
 
         }
     }

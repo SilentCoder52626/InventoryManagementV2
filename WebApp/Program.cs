@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.IdentityModel.Tokens;
+using NepaliDateConverter;
 using Newtonsoft.Json;
 using NLog;
 using NLog.Web;
@@ -108,7 +109,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.ConfigureAuthentication();
 builder.Services.UseDIConfig();
-
+builder.Services.AddDateServices();
 
 builder.Services.Configure<FormOptions>(o =>
 {
