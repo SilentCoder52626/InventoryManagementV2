@@ -1,11 +1,10 @@
 ﻿@model Inventory.ViewModels.Purchase.PurchaseIndexViewModel
 
 @{
-    
+    ViewData["Header"] = "Create Purchase";
 }
 
-<div class="container mt-5">
-    <h2 class="text-left">Create Purchase</h2>
+<div class="container-fluid mt-5">
     <div class="row">
 
         <div class="col-5">
@@ -19,20 +18,22 @@
             <form class="shadow rounded border-primary border-left  text-dark  p-4" method="post">
                 <div class="form-group">
                     <label class="font-weight-bold" asp-for="ItemId"></label>
-                    <select asp-items="@Model.ItemSelectList" asp-for="ItemId" class="form-control" id="item_id"></select>
+                    <select asp-items="@Model.ItemSelectList" asp-for="ItemId" class="form-control drop-down" id="item_id"></select>
                 </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label class="font-weight-bold col-form-label"> Rate </label>
+                        <input id="rate" min="1" value="1" class="form-control" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label class="font-weight-bold col-form-label"> Sales Rate </label>
+                        <input id="salesRate" min="1" value="1" class="form-control" />
+                    </div>
+                </div>
+                
 
                 <div class="form-group">
-                    <label class="font-weight-bold col-form-label"> Rate: </label>
-                    <input id="rate" min="1" value="1" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label class="font-weight-bold col-form-label"> Sales Rate </label>
-                    <input id="salesRate" min="1" value="1" class="form-control" />
-                </div>
-
-                <div class="form-group">
-                    <label class="font-weight-bold col-form-label"> Quantity: </label>
+                    <label class="font-weight-bold col-form-label"> Quantity </label>
                     <input id="qty" value="1" class="form-control" placeholder="Input  quantity" />
                 </div>
 
@@ -64,7 +65,7 @@
             <form method="POST">
                 <ul class="list-group mt-3">
 
-                    <li class="list-group-item bg active">Sale Detail</li>
+                    <li class="list-group-item bg active">Purchase Detail</li>
 
                     <li class="list-group-item text-right ">
                         Total &nbsp;
@@ -308,7 +309,9 @@
             $("#btnSave").click(function (e) {
                 e.preventDefault();
 
-                checkIfEmpty();
+                if (!checkIfEmpty()) {
+                    return false;
+                }
 
                 var url = `/Inventory/Purchase/Create`;
 
@@ -342,6 +345,7 @@
                     dataType: 'json',
                     success: function (data, status) {
                         alert("Purchase Saved Successfully!");
+
                         window.location.href = `/Inventory/Purchase/Index`;
 
                     }

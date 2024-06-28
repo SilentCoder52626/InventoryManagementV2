@@ -1,11 +1,11 @@
 ﻿@model IList<Inventory.ViewModels.Purchase.PurchaseIndexViewModel>
 
 @{
+    ViewData["Header"] = "Purchase";
 
 }
 
-<div class="container">
-    <h1 class="text-center">Purchase</h1>
+<div class="container-fluid">
     <a class="btn btn-primary mb-2 mt-2" asp-area="Inventory" asp-controller="Purchase" asp-action="Create"> <i class="fa fa-plus-square"></i> &nbsp; Add </a>
 
     <div class="table bg-light">

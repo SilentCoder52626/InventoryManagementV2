@@ -1,10 +1,11 @@
 ﻿@model IList<Inventory.ViewModels.Supplier.SupplierIndexViewModel>
 
 @{
+    ViewData["Header"] = "Supplier";
 
 }
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col-md-4">
             <a class="btn btn-primary mb-2 mt-2" asp-area="Inventory" asp-controller="Supplier" asp-action="Create"><i class="fa fa-plus-square"></i> &nbsp; Add </a>
@@ -13,9 +14,9 @@
     </div>
     <br />
     <div class="row">
-        <div class="col-md-12 bg-light">
+        <div class="col-md-12">
             <table class="table" id="datatable">
-                <thead class="table-bordered table-dark">
+                <thead class="thead-dark">
                     <tr>
                         <th>#</th>
                         <th>Full Name</th>

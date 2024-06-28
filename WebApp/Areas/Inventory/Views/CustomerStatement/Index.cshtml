@@ -1,24 +1,28 @@
 ﻿@model Inventory.ViewModels.CustomerTransactionViewModel
 
 @{
-    
+    ViewData["Header"] = "Customer Statement";
+
 }
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col-md-12">
 
             <form method="get" asp-action="Index">
-                <div class="form-group col-md-4 ">
-                    <label class="font-weight-bold"> Select Customer</label>
-                    <select asp-for="CustomerId" name="customerId" asp-items="@Model.CustomerSelectList" class="form-control">
-                        <option value="0">--Select--</option>
-                    </select>
-                    <span asp-validation-for="CustomerId" class="text-danger"></span>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label class="font-weight-bold"> Select Customer</label>
+                        <select asp-for="CustomerId" name="customerId" asp-items="@Model.CustomerSelectList" class="form-control drop-down">
+                            <option value="0">--Select--</option>
+                        </select>
+                        <span asp-validation-for="CustomerId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-md-4 ">
+                        <button class="btn btn-success mt-4" type="submit">Filter</button>
+                    </div>
                 </div>
-                <div class="form-group col-md-4 ">
-                    <button class="btn btn-success" type="submit">Filter</button>
-                </div>
+               
             </form>
         </div>
     </div>
