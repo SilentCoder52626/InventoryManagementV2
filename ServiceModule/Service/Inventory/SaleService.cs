@@ -80,8 +80,10 @@ namespace InventoryLibrary.Services.Implementation
                     Amount = sale.netTotal,
                     ExtraId = sale.SaleId,
                     Type = CustomerTransaction.TypeSales,
-                    Balance = CurrentBalance-sale.netTotal
+                    Balance = CurrentBalance+sale.netTotal
                 }).ConfigureAwait(false);
+
+                CurrentBalance += (decimal)sale.netTotal;
                 // Type payment
                 if (sale.paidAmount - sale.returnAmount > 0)
                 {
