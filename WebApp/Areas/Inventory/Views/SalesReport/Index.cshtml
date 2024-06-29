@@ -1,18 +1,39 @@
-﻿@model IList<Inventory.ViewModels.SalesReport.SalesReportViewModel>
+﻿@model Inventory.ViewModels.SalesReport.SalesReportFilterModel
 
 @{
     ViewData["Header"] = "Sales Report";
-
+    ViewData["Title"] = "Sales Report";
 }
 
 <div class="container-fluid mt-2">
+    <div class="row">
+        <div class="col-md-12">
+
+
+            <div class="row">
+                <div class="form-group col-md-4">
+                    <label class="font-weight-bold"> From</label>
+                   <input type="date" asp-for="From" class="form-control"/>
+                    <span asp-validation-for="From" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-4">
+                    <label class="font-weight-bold"> To</label>
+                   <input type="date" asp-for="To" class="form-control"/>
+                    <span asp-validation-for="To" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-4 ">
+                    <button class="btn btn-success mt-4" id="filter" type="button">Filter</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-12">
             <div class="table table-responsive mt-4">
                 <table id="mainTable" class="table mt-3 ">
                     <thead class="thead-light">
                         <tr>
-                            <th scope="col">#</th>
                             <th scope="col">Transaction Date</th>
                             <th scope="col">Customer Name</th>
                             <th scope="col">Amount</th>
@@ -25,26 +46,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @{
-                            var i = 1;
-                            foreach (var data in Model)
-                            {
-                                <tr>
-                                    <td scope="row">@i</td>
-                                    <td>@data.TransactionDateNepali @data.TransactionDate.ToString("hh:mm tt")</td>
-                                    <td>@data.CustomerName</td>
-                                    <td>@data.Amount</td>
-                                    <td>@data.Discount</td>
-                                    <td>@data.GrandAmount</td>
-                                    <td>@data.PaidAmount</td>
-                                    <td>@data.ReturnAmount</td>
-                                    <td>@data.DueAmount</td>
-
-                                </tr>
-                                i++;
-
-                            }
-                        }
+                      
                     </tbody>
                 </table>
             </div>
@@ -57,11 +59,41 @@
 @section scripts{
     <script>
         $(document).ready(function () {
-
-
-            $("#mainTable").DataTable({
-                "pageLength": 10
+            $("#filter").on("click", function (e) {
+                e.preventDefault();
+                table.draw();
             });
+            var table = $("#mainTable").DataTable({
+                "processing": true,
+                "serverSide": true,
+                "filter": false,
+                "ordering": false,
+                lengthMenu: [10, 25, 50, 75, 100],
+                "ajax": {
+                    "url": "/inventory/salesreport/LoadReport",
+                    "type": "POST",
+                    "datatype": "json",
+                    "data": function (d) {
+                        d.From = $("#From").val();
+                        d.To = $("#To").val();
+                    }
+                },
+                "columns": [
+                    {
+                        "render": function (data, type, row, meta) {
+                            return `${row.TransactionDateNepali} ${row.TransactionTime}`
+                        }
+                    },
+                    { "data": "CustomerName", "autoWidth": true },
+                    { "data": "Amount", "autoWidth": true },
+                    { "data": "Discount", "autoWidth": true },
+                    { "data": "GrandAmount", "autoWidth": true },
+                    { "data": "PaidAmount", "autoWidth": true },
+                    { "data": "ReturnAmount", "autoWidth": true },
+                    { "data": "DueAmount", "autoWidth": true },
+                ]
+            });
+
 
         });
     </script>

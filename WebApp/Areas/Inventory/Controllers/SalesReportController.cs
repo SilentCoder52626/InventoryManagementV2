@@ -1,4 +1,5 @@
-﻿using Inventory.ViewModels.SalesReport;
+﻿using Inventory.ViewModels;
+using Inventory.ViewModels.SalesReport;
 using InventoryLibrary.Repository.Interface;
 using InventoryLibrary.Source.Repository.Interface;
 using Microsoft.AspNetCore.Authorization;
@@ -25,11 +26,26 @@ namespace Inventory.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var Sales = await _salesRepo.GetAllAsync();
-            var vm = new List<SalesReportViewModel>();
+            var filterModel = new SalesReportFilterModel();
+            filterModel.From = DateTime.Now.AddDays(-30);
+            filterModel.To = DateTime.Now;
+            return View(filterModel);
+        }
+        public async Task<IActionResult> LoadReport(SalesReportFilterModel model)
+        {
+            var SalesQuery = _salesRepo.GetQueryable();
+
+
+            SalesQuery = SalesQuery.Where(c=>c.SalesDate >= model.From &&  c.SalesDate <= model.To);
+            var TotalCount = SalesQuery.Count();
+
+
+            var Sales = SalesQuery.OrderByDescending(a => a.SalesDate).Skip(model.start).Take(model.length).ToList();
+
+            var response = new List<SalesReportViewModel>();
             foreach (var sale in Sales)
             {
-                vm.Add(new SalesReportViewModel()
+                response.Add(new SalesReportViewModel()
                 {
                     Amount = sale.total,
                     GrandAmount = sale.netTotal,
@@ -43,7 +59,9 @@ namespace Inventory.Controllers
                     TransactionDateNepali = _dateConverter.ToBS(sale.SalesDate).ToString(),
                 });
             }
-            return View(vm);
+
+            var jsonData = new { draw = model.draw, recordsFiltered = TotalCount, recordsTotal = TotalCount, data = response };
+            return Ok(jsonData);
         }
     }
 }

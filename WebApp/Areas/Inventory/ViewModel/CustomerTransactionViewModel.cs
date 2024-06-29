@@ -1,15 +1,13 @@
-﻿using InventoryLibrary.Entity;
+﻿using Inventory.ViewModel;
+using InventoryLibrary.Entity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 
 namespace Inventory.ViewModels
 {
-    public class CustomerTransactionFilterModel
+    public class CustomerTransactionFilterModel : BaseFilterModel
     {
-        public int draw { get; set; }
-        public int start { get; set; }
-        public int length { get; set; }
         public int CustomerId { get; set; }
     }
     public class CustomerTransactionViewModel
