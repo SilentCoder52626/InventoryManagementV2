@@ -50,27 +50,9 @@ namespace Inventory.Controllers
         {
             try
             {
-                var sales = await _saleRepo.GetQueryable().ToListAsync().ConfigureAwait(true);
-                var indexViewModel = new List<SaleIndexViewModel>();
+               
 
-                foreach (var data in sales)
-                {
-                    var Customer = await _customerRepo.GetByIdAsync(data.CusId).ConfigureAwait(false);
-                    var model = new SaleIndexViewModel()
-                    {
-                        CusId = data.CusId,
-                        SaleId = data.SaleId,
-                        CustomerName = Customer?.FullName,
-                        netTotal = data.netTotal,
-                        discount = data.discount,
-                        date = data.SalesDate,
-                        NepaliDate = _dateConverter.ToBS(data.SalesDate).ToString(),
-                    };
-
-                    indexViewModel.Add(model);
-                }
-
-                return View(indexViewModel);
+                return View();
 
             }
             catch (Exception ex)
@@ -80,6 +62,35 @@ namespace Inventory.Controllers
             }
 
             return View();
+        }
+
+        public async Task<IActionResult> LoadSales(SalesFilterModel filter)
+        {
+
+            var SalesQuery = _saleRepo.GetQueryable();
+            var TotalCount = SalesQuery.Count();
+
+            var sales = await SalesQuery.OrderByDescending(a=>a.SalesDate).Skip(filter.start).Take(filter.length).ToListAsync();
+            var response = new List<SaleIndexViewModel>();
+
+            foreach (var data in sales)
+            {
+                var Customer = await _customerRepo.GetByIdAsync(data.CusId).ConfigureAwait(false);
+                var model = new SaleIndexViewModel()
+                {
+                    CusId = data.CusId,
+                    SaleId = data.SaleId,
+                    CustomerName = Customer?.FullName,
+                    netTotal = data.netTotal,
+                    discount = data.discount,
+                    date = data.SalesDate,
+                    NepaliDate = _dateConverter.ToBS(data.SalesDate).ToString(),
+                };
+
+                response.Add(model);
+            }
+            var jsonData = new { draw = filter.draw, recordsFiltered = TotalCount, recordsTotal = TotalCount, data = response };
+            return Ok(jsonData);
         }
         [HttpGet]
         public async Task<IActionResult> GetPrice(int id)

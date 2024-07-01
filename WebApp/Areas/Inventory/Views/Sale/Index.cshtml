@@ -1,11 +1,11 @@
-﻿@model IList<Inventory.ViewModels.Sale.SaleIndexViewModel>
-
+﻿
 @{
     ViewData["Header"] = "Sales";
+    ViewData["Title"] = "Sales";
 }
 
 <div class="container-fluid mt-2">
-    <a class="btn btn-primary mb-2 mt-2" asp-area="Inventory" asp-controller="Sale" asp-action="Create"> <i class="fa fa-plus-square"></i> &nbsp; Add </a>
+    <a class="btn btn-primary" asp-area="Inventory" asp-controller="Sale" asp-action="Create"> <i class="fa fa-plus-square"></i> &nbsp; Add </a>
 
     <div class="row">
         <div class="col-md-12">
@@ -13,7 +13,6 @@
                 <table id="mainTable" class="table mt-3 ">
                     <thead class="thead-dark">
                         <tr>
-                            <th scope="col">#</th>
                             <th scope="col">Date</th>
                             <th scope="col">Customer</th>
                             <th scope="col">Discount</th>
@@ -22,23 +21,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @{
-                            foreach (var data in Model)
-                            {
-                                    <tr>
-                                        <td scope="row" class="sale-id">@data.SaleId</td>
-                                        <td>@data.NepaliDate @data.date.ToString("hh:mm tt")</td>
-                                        <td>@data.CustomerName</td>
-                                        <td>@data.discount</td>
-                                        <td>@data.netTotal</td>
-                                        <td>
-                                            <a class="btn btn-info btn-details text-white btn-sm details" data-toggle="modal" data-target="#myModal"> Details </a>
-                                            <a class="btn btn-success btn-print text-white btn-sm"> Print </a>
-                                        </td>
-                                    </tr>
-
-                            }
-                        }
+                        
                     </tbody>
                 </table>
             </div>
@@ -79,21 +62,50 @@
 
 
             $("#mainTable").DataTable({
-                "pageLength": 10
+                "processing": true,
+                "serverSide": true,
+                "filter": false,
+                "ordering": false,
+                lengthMenu: [10, 25, 50, 75, 100],
+
+                "ajax": {
+                    "url": "/inventory/sale/LoadSales",
+                    "type": "POST",
+                },
+                "columns": [
+                    {
+                        "render": function (data, type, row, meta) {
+                            return `${row.NepaliDate} ${row.SalesTime}`
+                        }
+                    },
+                    { "data": "CustomerName", "autoWidth": true },
+                    { "data": "discount", "autoWidth": true },
+                    { "data": "netTotal", "autoWidth": true },
+                    
+                    {
+                        "render": function (data, type, row, meta) {
+                            return `
+                            <input type="hidden" class="salesId" value="${row.SaleId}" />
+                            <a class="btn btn-info btn-details text-white btn-sm details" data-toggle="modal" data-target="#myModal"> Details </a> 
+                            <a class="btn btn-success btn-print text-white btn-sm"> Print </a>`
+                        }
+
+                    },
+                ]
             });
-            $('.btn-print').on('click',function(){
+            $(document).on('click', '.btn-print', function () {
                 event.preventDefault();
-                var id = $(this).closest('tr').find('td').eq(0).text();
+                var id = $(this).closest('td').find('.salesId').eq(0).val();
                 var url = '/Inventory/Sale/Print?saleId=' + id + "";
                 window.open(url, '_blank');
                 
                 
             })
-            $('.btn-details').on('click', function () {
+            $(document).on('click', '.btn-details', function () {
 
                 event.preventDefault();
 
-                var id = $(this).closest('tr').find('td').eq(0).text();
+                var id = $(this).closest('td').find('.salesId').eq(0).val();
                 var url = '/Inventory/Sale/GetDetails?id=' + id + "";
 
 

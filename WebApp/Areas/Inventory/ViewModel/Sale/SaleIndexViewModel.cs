@@ -1,4 +1,5 @@
-﻿using Inventory.ViewModels.SaleDetail;
+﻿using Inventory.ViewModel;
+using Inventory.ViewModels.SaleDetail;
 using InventoryLibrary.Entity;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Org.BouncyCastle.Utilities;
@@ -8,12 +9,17 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Inventory.ViewModels.Sale
 {
+    public class SalesFilterModel : BaseFilterModel
+    {
+
+    }
     public class SaleIndexViewModel
     {
         public long SaleId { get; set; }
 
         [Display(Name = "Customer")]
         public long CusId { get; set; }
+        public string SalesTime => date.ToString("hh:mm tt");
 
         public string? CustomerName { get; set; }
 
